@@ -1,0 +1,47 @@
+// Part 1)Is Polindrome or not
+
+using System;
+
+class Program
+{
+    static bool IsPalindrome(string word)
+    {
+        word = word.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "");
+
+        if (word.Length <= 1)
+        {
+            return true;
+        }
+
+        int left = 0;
+        int right = word.Length - 1;
+
+        while (left < right)
+        {
+            if (word[left] != word[right])
+            {
+                return false;
+            }
+
+            left++;
+            right--;
+        }
+
+        return true;
+    }
+
+    static void Main()
+    {
+        string input = "racecar";
+        bool isPalindrome = IsPalindrome(input);
+
+        if (isPalindrome)
+        {
+            Console.WriteLine("\"" + input + "\" is a palindrome.");
+        }
+        else
+        {
+            Console.WriteLine("\"" + input + "\" is not a palindrome.");
+        }
+    }
+}

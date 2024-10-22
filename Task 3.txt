@@ -1,0 +1,115 @@
+// Part 3) Write a custom implementation based on arrays of Dictionary
+
+using System;
+
+public class CustomDictionary<TKey, TValue>
+{
+    private const int DefaultCapacity = 10;
+
+    private TKey[] keys;
+    private TValue[] values;
+    private int size;
+
+    public CustomDictionary() : this(DefaultCapacity) {}
+
+    public CustomDictionary(int initialCapacity)
+    {
+        keys = new TKey[initialCapacity];
+        values = new TValue[initialCapacity];
+        size = 0;
+    }
+
+    private int Hash(TKey key)
+    {
+        return key.GetHashCode() % keys.Length;
+    }
+
+    public void Add(TKey key, TValue value)
+    {
+        int index = Hash(key);
+
+        while (keys[index] != null && keys[index] != key)
+        {
+            index = (index + 1) % keys.Length;
+        }
+
+        if (keys[index] == null)
+        {
+            size++;
+            if (size > keys.Length / 2)
+            {
+                Resize();
+                index = Hash(key);
+            }
+            keys[index] = key;
+            values[index] = value;
+        }
+    }
+
+    public TValue Get(TKey key)
+    {
+        int index = Hash(key);
+
+        while (keys[index] != null && keys[index] != key)
+        {
+            index = (index + 1) % keys.Length;
+        }
+
+        if (keys[index] == null)
+        {
+            throw new KeyNotFoundException();
+        }
+        else
+        {
+            return values[index];
+        }
+    }
+
+    public bool Remove(TKey key)
+    {
+        int index = Hash(key);
+
+        while (keys[index] != null && keys[index] != key)
+        {
+            index = (index + 1) % keys.Length;
+        }
+
+        if (keys[index] == null)
+        {
+            return false;
+        }
+
+        keys[index] = default(TKey);
+        values[index] = default(TValue);
+        size--;
+
+        if (size < keys.Length / 4)
+        {
+            Resize(Math.Max(keys.Length / 2, 1));
+        }
+
+        return true;
+    }
+
+    private void Resize(int newCapacity = -1)
+    {
+        if (newCapacity == -1)
+        {
+            newCapacity = keys.Length * 2;
+        }
+
+        TKey[] oldKeys = keys;
+        TValue[] oldValues = values;
+        keys = new TKey[newCapacity];
+        values = new TValue[newCapacity];
+        size = 0;
+
+        for (int i = 0; i < oldKeys.Length; i++)
+        {
+            if (oldKeys[i] != null)
+            {
+                Add(oldKeys[i], oldValues[i]);
+            }
+        }
+    }
+}
